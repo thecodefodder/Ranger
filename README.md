@@ -4,7 +4,8 @@ This project is a simple command-line tool written in Rust that helps you create
 
 - CMake
 - Make 
-- Meson. 
+- Meson.
+- Premake5
 
 The tool downloads the necessary template files from this GitHub repository and sets up the project structure for you.
 
@@ -47,6 +48,7 @@ Replace `<project_name>` with your desired project name. You will then be prompt
 - CMake
 - Make
 - Meson
+- Premake5
 
 The tool will create a new directory with the specified project name and set up the necessary files based on the selected build system.
 
