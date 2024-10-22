@@ -1,7 +1,7 @@
-use std::error::Error;
-use std::{env, fs};
-use std::path::Path;
 use dialoguer::Select;
+use std::error::Error;
+use std::path::Path;
+use std::{env, fs};
 
 const GITHUB_REPO: &str = "https://raw.githubusercontent.com/thecodefodder/Ranger/main/templates/";
 
@@ -18,20 +18,30 @@ async fn create_cpp_project(project_name: &str, build_system: &str) -> Result<()
     fs::create_dir_all(project_path)?;
 
     let base_url = format!("{}{}", GITHUB_REPO, build_system);
-    let mut template_files = vec![
-        (format!("{}/src/main.cpp", base_url), project_path.join("src/main.cpp")),
-    ];
+    let mut template_files = vec![(
+        format!("{}/src/main.cpp", base_url),
+        project_path.join("src/main.cpp"),
+    )];
 
     match build_system {
         "CMake-Cpp" => {
-            template_files.push((format!("{}/CMakeLists.txt", base_url), project_path.join("CMakeLists.txt")));
-        },
+            template_files.push((
+                format!("{}/CMakeLists.txt", base_url),
+                project_path.join("CMakeLists.txt"),
+            ));
+        }
         "Make-Cpp" => {
-            template_files.push((format!("{}/Makefile", base_url), project_path.join("Makefile")));
-        },
+            template_files.push((
+                format!("{}/Makefile", base_url),
+                project_path.join("Makefile"),
+            ));
+        }
         "Meson-Cpp" => {
-            template_files.push((format!("{}/meson.build", base_url), project_path.join("meson.build")));
-        },
+            template_files.push((
+                format!("{}/meson.build", base_url),
+                project_path.join("meson.build"),
+            ));
+        }
         _ => {}
     }
 
@@ -67,7 +77,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     });
 
     create_cpp_project(&project_name, options[selection]).await?;
-    println!("C++ project '{}' created successfully with {}.", project_name, options[selection]);
+    println!(
+        "C++ project '{}' created successfully with {}.",
+        project_name, options[selection]
+    );
 
     Ok(())
 }
@@ -82,7 +95,9 @@ mod tests {
         let project_name = "TestProject";
         let build_system = "CMake-Cpp";
 
-        create_cpp_project(project_name, build_system).await.unwrap();
+        create_cpp_project(project_name, build_system)
+            .await
+            .unwrap();
 
         let project_path = Path::new(project_name);
         assert!(project_path.exists());
@@ -98,7 +113,9 @@ mod tests {
         let project_name = "TestMakeProject";
         let build_system = "Make-Cpp";
 
-        create_cpp_project(project_name, build_system).await.unwrap();
+        create_cpp_project(project_name, build_system)
+            .await
+            .unwrap();
 
         let project_path = Path::new(project_name);
         assert!(project_path.exists());
@@ -114,7 +131,9 @@ mod tests {
         let project_name = "TestMesonProject";
         let build_system = "Meson-Cpp";
 
-        create_cpp_project(project_name, build_system).await.unwrap();
+        create_cpp_project(project_name, build_system)
+            .await
+            .unwrap();
 
         let project_path = Path::new(project_name);
         assert!(project_path.exists());
