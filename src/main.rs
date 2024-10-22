@@ -62,6 +62,11 @@ async fn create_cpp_project(project_name: &str, build_system: &str) -> Result<()
 // TODO: Add support for C
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    let project_name = env::args().nth(1).unwrap_or_else(|| {
+        eprintln!("Usage: cargo run <project_name>");
+        std::process::exit(1);
+    });
+
     let options = vec!["CMake-Cpp", "Make-Cpp", "Meson-Cpp"];
 
     let selection = Select::new()
@@ -70,11 +75,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .items(&options)
         .interact()
         .unwrap();
-
-    let project_name = env::args().nth(1).unwrap_or_else(|| {
-        eprintln!("Usage: cargo run <project_name>");
-        std::process::exit(1);
-    });
 
     create_cpp_project(&project_name, options[selection]).await?;
     println!(
