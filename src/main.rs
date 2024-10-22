@@ -2,6 +2,7 @@ use dialoguer::Select;
 use std::error::Error;
 use std::path::Path;
 use std::{env, fs};
+use std::fmt::format;
 
 const GITHUB_REPO: &str = "https://raw.githubusercontent.com/thecodefodder/Ranger/main/templates/";
 
@@ -42,6 +43,12 @@ async fn create_cpp_project(project_name: &str, build_system: &str) -> Result<()
                 project_path.join("meson.build"),
             ));
         }
+        "Premake5-Cpp" => {
+            template_files.push((
+                format!("{}/premake5.lua", base_url),
+                project_path.join("premake5.lua"),
+            ));
+        }
         _ => {}
     }
 
@@ -67,7 +74,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         std::process::exit(1);
     });
 
-    let options = vec!["CMake-Cpp", "Make-Cpp", "Meson-Cpp"];
+    let options = vec!["CMake-Cpp", "Make-Cpp", "Meson-Cpp", "Premake5-Cpp"];
 
     let selection = Select::new()
         .with_prompt("Please select a build system")
@@ -138,6 +145,24 @@ mod tests {
         let project_path = Path::new(project_name);
         assert!(project_path.exists());
         assert!(project_path.join("meson.build").exists());
+        assert!(project_path.join("src").exists());
+        assert!(project_path.join("src/main.cpp").exists());
+
+        remove_dir_all(project_path).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_create_premake_cpp_project() {
+        let project_name = "TestPremakeProject";
+        let build_system = "Premake5-Cpp";
+
+        create_cpp_project(project_name, build_system)
+            .await
+            .unwrap();
+
+        let project_path = Path::new(project_name);
+        assert!(project_path.exists());
+        assert!(project_path.join("premake5.lua").exists());
         assert!(project_path.join("src").exists());
         assert!(project_path.join("src/main.cpp").exists());
 
