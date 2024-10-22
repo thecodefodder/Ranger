@@ -71,3 +71,57 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::remove_dir_all;
+
+    #[tokio::test]
+    async fn test_create_cpp_project() {
+        let project_name = "TestProject";
+        let build_system = "CMake-Cpp";
+
+        create_cpp_project(project_name, build_system).await.unwrap();
+
+        let project_path = Path::new(project_name);
+        assert!(project_path.exists());
+        assert!(project_path.join("CMakeLists.txt").exists());
+        assert!(project_path.join("src").exists());
+        assert!(project_path.join("src/main.cpp").exists());
+
+        remove_dir_all(project_path).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_create_make_cpp_project() {
+        let project_name = "TestMakeProject";
+        let build_system = "Make-Cpp";
+
+        create_cpp_project(project_name, build_system).await.unwrap();
+
+        let project_path = Path::new(project_name);
+        assert!(project_path.exists());
+        assert!(project_path.join("Makefile").exists());
+        assert!(project_path.join("src").exists());
+        assert!(project_path.join("src/main.cpp").exists());
+
+        remove_dir_all(project_path).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_create_meson_cpp_project() {
+        let project_name = "TestMesonProject";
+        let build_system = "Meson-Cpp";
+
+        create_cpp_project(project_name, build_system).await.unwrap();
+
+        let project_path = Path::new(project_name);
+        assert!(project_path.exists());
+        assert!(project_path.join("meson.build").exists());
+        assert!(project_path.join("src").exists());
+        assert!(project_path.join("src/main.cpp").exists());
+
+        remove_dir_all(project_path).unwrap();
+    }
+}
