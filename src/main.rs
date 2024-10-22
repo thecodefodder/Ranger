@@ -18,12 +18,16 @@ async fn create_cpp_project(project_name: &str, build_system: &str) -> Result<()
     fs::create_dir_all(project_path)?;
 
     let base_url = format!("{}{}", GITHUB_REPO, build_system);
-
-    let template_files = vec![
+    let mut template_files = vec![
         (format!("{}/CMakeLists.txt", base_url), project_path.join("CMakeLists.txt")),
         (format!("{}/src/main.cpp", base_url), project_path.join("src/main.cpp")),
-        (format!("{}/meson.build", base_url), project_path.join("meson.build")),
     ];
+
+    if build_system == "Meson-Cpp" {
+        template_files.push((format!("{}/meson.build", base_url), project_path.join("meson.build")));
+    } else if build_system == "Make-Cpp" {
+        template_files.push((format!("{}/Makefile", base_url), project_path.join("Makefile")));
+    }
 
     fs::create_dir_all(project_path.join("src"))?;
 
@@ -31,10 +35,8 @@ async fn create_cpp_project(project_name: &str, build_system: &str) -> Result<()
         download_file(&url, &dest).await?;
 
         let mut content = fs::read_to_string(&dest)?;
-
         content = content.replace("${PROJECT_NAME}", project_name);
         content = content.replace("${EXECUTABLE_NAME}", project_name);
-
         fs::write(dest, content)?;
     }
 
