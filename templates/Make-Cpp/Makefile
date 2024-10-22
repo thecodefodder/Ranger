@@ -4,9 +4,9 @@ CXX = g++
 CXXFLAGS = -std=c++11 -Wall
 
 # Target executable
-TARGET = MyExecutable
+TARGET = $(EXECUTABLE_NAME)
 # Source files
-SRCS = main.cpp
+SRCS = src/main.cpp
 
 # Build the target
 $(TARGET): $(SRCS)

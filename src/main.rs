@@ -22,12 +22,20 @@ async fn create_cpp_project(project_name: &str, build_system: &str) -> Result<()
     let template_files = vec![
         (format!("{}/CMakeLists.txt", base_url), project_path.join("CMakeLists.txt")),
         (format!("{}/src/main.cpp", base_url), project_path.join("src/main.cpp")),
+        (format!("{}/meson.build", base_url), project_path.join("meson.build")),
     ];
 
     fs::create_dir_all(project_path.join("src"))?;
 
     for (url, dest) in template_files {
         download_file(&url, &dest).await?;
+
+        let mut content = fs::read_to_string(&dest)?;
+
+        content = content.replace("${PROJECT_NAME}", project_name);
+        content = content.replace("${EXECUTABLE_NAME}", project_name);
+
+        fs::write(dest, content)?;
     }
 
     Ok(())
