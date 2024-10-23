@@ -16,10 +16,10 @@ pub enum BuildSystem {
 impl fmt::Display for BuildSystem {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            BuildSystem::CMake => write!(f, "CMake"),
-            BuildSystem::Make => write!(f, "Make"),
-            BuildSystem::Meson => write!(f, "Meson"),
-            BuildSystem::Premake5 => write!(f, "Premake5"),
+            BuildSystem::CMake => write!(f, "CMake-Cpp"),
+            BuildSystem::Make => write!(f, "Make-Cpp"),
+            BuildSystem::Meson => write!(f, "Meson-Cpp"),
+            BuildSystem::Premake5 => write!(f, "Premake5-Cpp"),
         }
     }
 }
