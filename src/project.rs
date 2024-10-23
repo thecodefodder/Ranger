@@ -1,10 +1,30 @@
+use core::fmt;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
 use crate::GITHUB_REPO;
 use crate::utils::download_file;
 
-pub async fn create_cpp_project(project_name: &str, build_system: &str) -> Result<(), Box<dyn Error>> {
+#[derive(Debug)]
+pub enum BuildSystem {
+    CMake,
+    Make,
+    Meson,
+    Premake5
+}
+
+impl fmt::Display for BuildSystem {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            BuildSystem::CMake => write!(f, "CMake"),
+            BuildSystem::Make => write!(f, "Make"),
+            BuildSystem::Meson => write!(f, "Meson"),
+            BuildSystem::Premake5 => write!(f, "Premake5"),
+        }
+    }
+}
+
+pub async fn create_cpp_project(project_name: &str, build_system: BuildSystem) -> Result<(), Box<dyn Error>> {
     let project_path = Path::new(project_name);
     fs::create_dir_all(project_path)?;
 
@@ -15,31 +35,30 @@ pub async fn create_cpp_project(project_name: &str, build_system: &str) -> Resul
     )];
 
     match build_system {
-        "CMake-Cpp" => {
+        BuildSystem::CMake => {
             template_files.push((
                 format!("{}/CMakeLists.txt", base_url),
                 project_path.join("CMakeLists.txt"),
             ));
         }
-        "Make-Cpp" => {
+        BuildSystem::Make => {
             template_files.push((
                 format!("{}/Makefile", base_url),
                 project_path.join("Makefile"),
             ));
         }
-        "Meson-Cpp" => {
+        BuildSystem::Meson => {
             template_files.push((
                 format!("{}/meson.build", base_url),
                 project_path.join("meson.build"),
             ));
         }
-        "Premake5-Cpp" => {
+        BuildSystem::Premake5 => {
             template_files.push((
                 format!("{}/premake5.lua", base_url),
                 project_path.join("premake5.lua"),
             ));
         }
-        _ => {}
     }
 
     fs::create_dir_all(project_path.join("src"))?;

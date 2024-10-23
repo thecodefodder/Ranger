@@ -3,9 +3,8 @@ mod project;
 
 use dialoguer::Select;
 use std::error::Error;
-use std::path::Path;
 use std::env;
-use crate::project::create_cpp_project;
+use crate::project::{create_cpp_project, BuildSystem};
 
 const GITHUB_REPO: &str = "https://raw.githubusercontent.com/thecodefodder/Ranger/main/templates/";
 
@@ -26,7 +25,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .interact()
         .unwrap();
 
-    create_cpp_project(&project_name, options[selection]).await?;
+    let build_system = match selection {
+        0 => BuildSystem::CMake,
+        1 => BuildSystem::Make,
+        2 => BuildSystem::Meson,
+        3 => BuildSystem::Premake5,
+        _ => panic!("Invalid selection"),
+    };
+
+    create_cpp_project(&project_name, build_system).await?;
     println!(
         "C++ project '{}' created successfully with {}.",
         project_name, options[selection]
@@ -38,12 +45,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::remove_dir_all;
+    use std::{fs::remove_dir_all, path::Path};
 
     #[tokio::test]
     async fn test_create_cpp_project() {
         let project_name = "TestProject";
-        let build_system = "CMake-Cpp";
+        let build_system = BuildSystem::CMake;
 
         create_cpp_project(project_name, build_system)
             .await
@@ -61,7 +68,7 @@ mod tests {
     #[tokio::test]
     async fn test_create_make_cpp_project() {
         let project_name = "TestMakeProject";
-        let build_system = "Make-Cpp";
+        let build_system = BuildSystem::Make;
 
         create_cpp_project(project_name, build_system)
             .await
@@ -79,7 +86,7 @@ mod tests {
     #[tokio::test]
     async fn test_create_meson_cpp_project() {
         let project_name = "TestMesonProject";
-        let build_system = "Meson-Cpp";
+        let build_system = BuildSystem::Meson;
 
         create_cpp_project(project_name, build_system)
             .await
@@ -97,7 +104,7 @@ mod tests {
     #[tokio::test]
     async fn test_create_premake_cpp_project() {
         let project_name = "TestPremakeProject";
-        let build_system = "Premake5-Cpp";
+        let build_system = BuildSystem::Premake5;
 
         create_cpp_project(project_name, build_system)
             .await
