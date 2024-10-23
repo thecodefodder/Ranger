@@ -1,9 +1,9 @@
 use core::fmt;
-use std::error::Error;
 use std::fs;
 use std::path::Path;
 use crate::GITHUB_REPO;
 use crate::utils::download_file;
+use anyhow::{Result, Context};
 
 #[derive(Debug)]
 pub enum BuildSystem {
@@ -24,9 +24,9 @@ impl fmt::Display for BuildSystem {
     }
 }
 
-pub async fn create_cpp_project(project_name: &str, build_system: BuildSystem) -> Result<(), Box<dyn Error>> {
+pub async fn create_cpp_project(project_name: &str, build_system: BuildSystem) -> Result<()> {
     let project_path = Path::new(project_name);
-    fs::create_dir_all(project_path)?;
+    fs::create_dir_all(project_path).context("Failed to create project directory")?;
 
     let base_url = format!("{}{}", GITHUB_REPO, build_system);
     let mut template_files = vec![(
@@ -61,15 +61,15 @@ pub async fn create_cpp_project(project_name: &str, build_system: BuildSystem) -
         }
     }
 
-    fs::create_dir_all(project_path.join("src"))?;
+    fs::create_dir_all(project_path.join("src")).context("Failed to create src directory")?;
 
     for (url, dest) in template_files {
-        download_file(&url, &dest).await?;
+        download_file(&url, &dest).await.context(format!("Failed to download file from {}", url))?;
 
         let mut content = fs::read_to_string(&dest)?;
         content = content.replace("${PROJECT_NAME}", project_name);
         content = content.replace("${EXECUTABLE_NAME}", project_name);
-        fs::write(dest, content)?;
+        fs::write(&dest, content).context(format!("Failed to write to file: {:?}", dest))?;
     }
 
     Ok(())

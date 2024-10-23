@@ -2,19 +2,18 @@ mod utils;
 mod project;
 
 use dialoguer::Select;
-use std::error::Error;
 use std::env;
+use anyhow::Result;
 use crate::project::{create_cpp_project, BuildSystem};
 
 const GITHUB_REPO: &str = "https://raw.githubusercontent.com/thecodefodder/Ranger/main/templates/";
 
 // TODO: Add support for C
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    let project_name = env::args().nth(1).unwrap_or_else(|| {
-        eprintln!("Usage: cargo run <project_name>");
-        std::process::exit(1);
-    });
+async fn main() -> Result<()> {
+    let project_name = env::args().nth(1).ok_or_else(|| {
+        anyhow::anyhow!("Usage: cargo run <project_name>")
+    })?;
 
     let options = vec!["CMake-Cpp", "Make-Cpp", "Meson-Cpp", "Premake5-Cpp"];
 
