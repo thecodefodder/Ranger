@@ -29,7 +29,7 @@ async fn main() -> Result<()> {
         1 => BuildSystem::Make,
         2 => BuildSystem::Meson,
         3 => BuildSystem::Premake5,
-        _ => panic!("Invalid selection"),
+        _ => return Err(anyhow::anyhow!("Invalid selection: {}", selection)),
     };
 
     create_cpp_project(&project_name, build_system).await?;
