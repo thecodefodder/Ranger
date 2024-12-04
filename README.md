@@ -1,6 +1,6 @@
 # Ranger
 
-This project is a simple command-line tool written in Rust that helps you create a C/C++ project with a specified build system. It supports three build systems: 
+This project is a simple command-line tool written in Rust that helps you create a C/C++ project with a specified build system.
 
 - CMake
 - Make 
