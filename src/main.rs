@@ -11,8 +11,12 @@ const GITHUB_REPO: &str = "https://raw.githubusercontent.com/thecodefodder/Range
 // TODO: Add support for C
 #[tokio::main]
 async fn main() -> Result<()> {
+    let binary_name = env::args().next().ok_or_else(|| {
+    	anyhow::anyhow!("Unable to retrieve binary name")
+    })?;
+    
     let project_name = env::args().nth(1).ok_or_else(|| {
-        anyhow::anyhow!("Usage: cargo run <project_name>")
+    anyhow::anyhow!("Usage: {} <project_name>", binary_name)
     })?;
 
     let options = vec!["CMake-Cpp", "Make-Cpp", "Meson-Cpp", "Premake5-Cpp"];

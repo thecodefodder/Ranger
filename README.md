@@ -22,6 +22,13 @@ The tool downloads the necessary template files from this GitHub repository and 
 
 ## Installation
 
+## Easy way
+```bash
+cargo install --git https://github.com/thecodefodder/Ranger
+```
+
+## Build from source
+
 1. Clone the repository:
 
    ```bash
